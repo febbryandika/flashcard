@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
 import { db } from "@/server/db";
 import { cards } from "@/server/db/schema";
-import { cardInput } from "@/lib/validators";
+import { cardInput, csvImportRows } from "@/lib/validators";
 import { getUserCard, getUserDeck } from "@/server/db/queries";
 import { requireUser } from "@/server/lib/require-user";
 
@@ -101,4 +101,31 @@ export async function deleteCard(cardId: string) {
   await db.delete(cards).where(eq(cards.id, card.id));
 
   revalidateDeck(card.deckId);
+}
+
+export type ImportResult = { error: string | null; imported: number };
+
+/**
+ * Batch insert from the CSV importer. Rows are parsed client-side by Papa
+ * Parse, so they are re-validated here against the same schema as manual
+ * entry — the client's filtering is a convenience, not a trust boundary.
+ */
+export async function importCards(
+  deckId: string,
+  rows: unknown,
+): Promise<ImportResult> {
+  const user = await requireUser();
+
+  const deck = await getUserDeck(deckId, user.id);
+  if (!deck) return { error: "Deck not found.", imported: 0 };
+
+  const parsed = csvImportRows.safeParse(rows);
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0].message, imported: 0 };
+  }
+
+  await db.insert(cards).values(parsed.data.map((row) => ({ ...row, deckId })));
+
+  revalidateDeck(deckId);
+  return { error: null, imported: parsed.data.length };
 }

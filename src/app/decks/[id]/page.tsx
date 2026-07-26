@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
 import { CardForm } from "@/components/card-form";
+import { CsvImporter } from "@/components/csv-importer";
 import { DeleteCardButton } from "@/components/delete-card-button";
 import { createCard } from "@/server/actions/cards";
 import { getDeckCards, getUserDeck } from "@/server/db/queries";
@@ -70,6 +71,19 @@ export default async function DeckDetailPage({
             submitLabel="Add card"
             pendingLabel="Adding…"
           />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>
+            <h2 className="font-heading text-base leading-snug font-medium">
+              Import CSV
+            </h2>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <CsvImporter deckId={deck.id} />
         </CardContent>
       </Card>
 

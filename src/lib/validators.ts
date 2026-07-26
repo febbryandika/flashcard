@@ -1,11 +1,15 @@
 import { z } from "zod";
 
-/** Empty optional form fields arrive as "" from FormData — store them as NULL. */
+/**
+ * Optional text from either source: FormData sends "" for an empty field,
+ * while JSON payloads (the CSV importer) send null. Both store as NULL.
+ */
 const optionalText = (max: number) =>
   z
     .string()
     .trim()
     .max(max)
+    .nullish()
     .transform((value) => value || null);
 
 export const deckInput = z.object({
@@ -23,6 +27,14 @@ export const cardInput = z.object({
 });
 
 export type CardInput = z.infer<typeof cardInput>;
+
+/** CSV rows reuse cardInput, so imports obey the same rules as manual entry. */
+export const CSV_ROW_LIMIT = 500;
+
+export const csvImportRows = z
+  .array(cardInput)
+  .min(1, "No valid rows to import")
+  .max(CSV_ROW_LIMIT, `Cannot import more than ${CSV_ROW_LIMIT} rows at once`);
 
 /** Again=1, Hard=2, Good=3, Easy=4 — the only values a client may submit. */
 export const ratingInput = z.object({
