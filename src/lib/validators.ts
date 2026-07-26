@@ -23,3 +23,10 @@ export const cardInput = z.object({
 });
 
 export type CardInput = z.infer<typeof cardInput>;
+
+/** Again=1, Hard=2, Good=3, Easy=4 — the only values a client may submit. */
+export const ratingInput = z.object({
+  rating: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)]),
+});
+
+export type RatingInput = z.infer<typeof ratingInput>;
