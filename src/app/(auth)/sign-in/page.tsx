@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import {
   Card,
   CardContent,
@@ -17,7 +18,11 @@ export default function SignInPage() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <SignInForm />
+        {/* SignInForm reads the `next` search param, which opts it out of
+            static prerendering unless it sits behind a Suspense boundary. */}
+        <Suspense fallback={<div className="h-64" />}>
+          <SignInForm />
+        </Suspense>
       </CardContent>
     </Card>
   );

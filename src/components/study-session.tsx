@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { signInWithReturnTo } from "@/lib/return-to";
 import { useMutation } from "@tanstack/react-query";
 import { FlashCard } from "@/components/flash-card";
 import { RatingBar } from "@/components/rating-bar";
@@ -29,6 +30,7 @@ export function StudySession({
   backLabel,
 }: StudySessionProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const [error, setError] = useState<string | null>(null);
   const [lastRating, setLastRating] = useState<RateVariables | null>(null);
 
@@ -53,7 +55,7 @@ export function StudySession({
       }),
     onError: (err, variables) => {
       if (err instanceof HttpError && err.status === 401) {
-        router.push("/sign-in");
+        router.push(signInWithReturnTo(pathname));
         return;
       }
       back(variables.from);
