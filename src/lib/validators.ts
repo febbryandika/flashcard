@@ -42,3 +42,29 @@ export const ratingInput = z.object({
 });
 
 export type RatingInput = z.infer<typeof ratingInput>;
+
+/** AI extraction: input capped at 5,000 characters (SPEC §7). */
+export const AI_TEXT_MAX = 5000;
+export const AI_CARD_MAX = 20;
+
+export const aiExtractInput = z.object({
+  text: z
+    .string()
+    .trim()
+    .min(1, "Paste some text to extract cards from")
+    .max(AI_TEXT_MAX, `Text must be ${AI_TEXT_MAX} characters or fewer`),
+});
+
+/** Shape the model must return — bounded so one call can't produce 500 cards. */
+export const extractedCards = z.object({
+  cards: z
+    .array(
+      z.object({
+        front: z.string().min(1).max(1000),
+        back: z.string().min(1).max(1000),
+      }),
+    )
+    .max(AI_CARD_MAX),
+});
+
+export type ExtractedCards = z.infer<typeof extractedCards>;
