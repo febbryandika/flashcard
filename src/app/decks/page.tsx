@@ -54,7 +54,12 @@ export default async function DecksPage() {
               <CardHeader>
                 <CardTitle>
                   <h3 className="font-heading text-base leading-snug font-medium">
-                    {deck.name}
+                    <Link
+                      href={`/decks/${deck.id}`}
+                      className="hover:underline"
+                    >
+                      {deck.name}
+                    </Link>
                   </h3>
                 </CardTitle>
                 {deck.description ? (
@@ -68,7 +73,8 @@ export default async function DecksPage() {
                   </p>
                 ) : null}
                 <p className="text-muted-foreground text-sm">
-                  {deck.totalCards} cards · {deck.dueToday} due today
+                  {deck.totalCards} {deck.totalCards === 1 ? "card" : "cards"} ·{" "}
+                  {deck.dueToday} due today
                 </p>
               </CardContent>
               <CardFooter className="justify-between">

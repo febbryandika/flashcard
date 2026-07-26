@@ -24,6 +24,26 @@ export async function getDecksWithStats(userId: string) {
     .orderBy(desc(decks.createdAt));
 }
 
+export async function getDeckCards(deckId: string) {
+  return db
+    .select()
+    .from(cards)
+    .where(eq(cards.deckId, deckId))
+    .orderBy(desc(cards.id));
+}
+
+/** Joins through the deck so a card is only ever readable by its owner. */
+export async function getUserCard(cardId: string, userId: string) {
+  const [row] = await db
+    .select({ card: cards })
+    .from(cards)
+    .innerJoin(decks, eq(cards.deckId, decks.id))
+    .where(and(eq(cards.id, cardId), eq(decks.userId, userId)))
+    .limit(1);
+
+  return row?.card ?? null;
+}
+
 export async function getUserDeck(deckId: string, userId: string) {
   const [deck] = await db
     .select()
