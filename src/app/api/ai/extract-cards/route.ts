@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { withRequestLogging } from "@/server/lib/request-log";
 import { aiExtractInput } from "@/lib/validators";
 import { getApiUser, jsonError } from "@/server/lib/api";
 import { extractCards } from "@/server/lib/extract-cards";
@@ -9,7 +10,7 @@ const FAILURE_MESSAGES = {
   error: "Extraction failed. Your text is preserved — try again.",
 } as const;
 
-export async function POST(req: NextRequest) {
+async function handlePOST(req: NextRequest) {
   const user = await getApiUser();
   if (!user) return jsonError("Unauthorized", 401);
 
@@ -34,3 +35,5 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({ cards: result.cards });
 }
+
+export const POST = withRequestLogging(handlePOST);

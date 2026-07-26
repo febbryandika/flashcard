@@ -1,3 +1,6 @@
 .next
 node_modules
 pnpm-lock.yaml
+drizzle
+test-results
+playwright-report
