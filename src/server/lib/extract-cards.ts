@@ -11,7 +11,7 @@ import { logger } from "@/server/lib/logger";
 const MODEL = "claude-haiku-4-5";
 
 /** SPEC §13: abort extraction after 15s. Budget covers the retry too. */
-export const EXTRACT_TIMEOUT_MS = 15_000;
+const EXTRACT_TIMEOUT_MS = 15_000;
 
 const PROMPT_PREFIX =
   "Extract question-answer flashcard pairs from the following text. " +

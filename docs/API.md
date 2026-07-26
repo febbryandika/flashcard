@@ -97,16 +97,17 @@ Extracts question/answer pairs from pasted text using `generateObject()` (Vercel
 
 At most **20** cards are returned — the schema caps it.
 
-| Status | When                                                        |
-| ------ | ----------------------------------------------------------- |
-| `400`  | Empty text, over 5,000 characters, or a malformed JSON body |
-| `401`  | No valid session                                            |
-| `502`  | The model returned output that failed the schema twice      |
-| `504`  | Extraction exceeded the 15-second budget                    |
+| Status | When                                                         |
+| ------ | ------------------------------------------------------------ |
+| `400`  | Empty text, over 5,000 characters, or a malformed JSON body  |
+| `401`  | No valid session                                             |
+| `502`  | The model returned output that failed the schema twice       |
+| `429`  | More than 10 extractions in a minute (carries `Retry-After`) |
+| `504`  | Extraction exceeded the 15-second budget                     |
 
 **Reliability** (see [`extract-cards.ts`](../src/server/lib/extract-cards.ts)): one 15-second deadline shared across attempts, exactly one retry and only on a schema mismatch, and token usage plus latency logged per call. On any failure the client keeps the pasted text so the user can retry without re-typing.
 
-> ⚠️ **No rate limiting yet.** This is the only paid, slow path in the app and currently any signed-in user can call it without limit. See [Known gaps](../README.md#known-gaps).
+**Rate limiting** (SPEC §9): 10 extractions per minute per user, sliding window. Exceeding it returns `429` with a `Retry-After` header. The limiter is in-memory, so it is per-process and resets on restart — sufficient for a single-instance deployment, and swappable for Upstash by replacing one function.
 
 ---
 
