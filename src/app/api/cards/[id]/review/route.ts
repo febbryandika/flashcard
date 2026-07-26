@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { withRequestLogging } from "@/server/lib/request-log";
 import { eq } from "drizzle-orm";
 import { db } from "@/server/db";
 import { cards } from "@/server/db/schema";
@@ -7,7 +8,7 @@ import { fsrs, type Rating } from "@/server/lib/fsrs";
 import { getApiUser, jsonError } from "@/server/lib/api";
 import { ratingInput } from "@/lib/validators";
 
-export async function POST(
+async function handlePOST(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
@@ -58,3 +59,5 @@ export async function POST(
     interval: updated.interval,
   });
 }
+
+export const POST = withRequestLogging(handlePOST);

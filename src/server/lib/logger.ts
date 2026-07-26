@@ -5,7 +5,10 @@ import pino from "pino";
  * production so log aggregators can parse it.
  */
 export const logger = pino({
-  level: process.env.LOG_LEVEL ?? "info",
+  // debug in development so query timing is visible; info elsewhere.
+  level:
+    process.env.LOG_LEVEL ??
+    (process.env.NODE_ENV === "development" ? "debug" : "info"),
   ...(process.env.NODE_ENV === "development"
     ? { transport: { target: "pino-pretty", options: { colorize: true } } }
     : {}),
