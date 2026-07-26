@@ -36,14 +36,23 @@ export default async function DeckDetailPage({
         >
           ← All decks
         </Link>
-        <header>
-          <h1 className="text-2xl font-semibold tracking-tight">{deck.name}</h1>
-          {deck.description ? (
-            <p className="text-muted-foreground text-sm">{deck.description}</p>
-          ) : null}
-          <p className="text-muted-foreground mt-1 text-sm">
-            {cards.length} {cards.length === 1 ? "card" : "cards"}
-          </p>
+        <header className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h1 className="text-2xl font-semibold tracking-tight">
+              {deck.name}
+            </h1>
+            {deck.description ? (
+              <p className="text-muted-foreground text-sm">
+                {deck.description}
+              </p>
+            ) : null}
+            <p className="text-muted-foreground mt-1 text-sm">
+              {cards.length} {cards.length === 1 ? "card" : "cards"}
+            </p>
+          </div>
+          <Link href={`/decks/${deck.id}/study`} className={buttonVariants()}>
+            Study
+          </Link>
         </header>
       </div>
 
