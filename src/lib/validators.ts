@@ -15,3 +15,11 @@ export const deckInput = z.object({
 });
 
 export type DeckInput = z.infer<typeof deckInput>;
+
+export const cardInput = z.object({
+  front: z.string().trim().min(1, "Front is required").max(1000),
+  back: z.string().trim().min(1, "Back is required").max(1000),
+  example: optionalText(1000),
+});
+
+export type CardInput = z.infer<typeof cardInput>;
