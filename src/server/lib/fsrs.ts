@@ -11,6 +11,8 @@ export interface ScheduledCard extends CardState {
   nextReviewAt: Date;
 }
 
+export type IntervalPreview = Record<Rating, number>;
+
 const D_MIN = 1;
 const D_MAX = 10;
 const DAY_MS = 86_400_000;
@@ -53,5 +55,18 @@ export function fsrs(
     repetitions: newRepetitions,
     interval,
     nextReviewAt,
+  };
+}
+
+/**
+ * Interval each rating would produce, so the rating buttons can preview
+ * "Good → 25d" without the scheduler ever reaching the client bundle.
+ */
+export function previewIntervals(state: CardState): IntervalPreview {
+  return {
+    1: fsrs(state, 1).interval,
+    2: fsrs(state, 2).interval,
+    3: fsrs(state, 3).interval,
+    4: fsrs(state, 4).interval,
   };
 }

@@ -1,6 +1,8 @@
 import { and, count, desc, eq, lte, sql } from "drizzle-orm";
 import { db } from "@/server/db";
 import { cards, decks } from "@/server/db/schema";
+import { previewIntervals } from "@/server/lib/fsrs";
+import type { StudyCard } from "@/lib/study";
 
 /** Deck list with per-deck stats in one grouped query (no N+1). */
 export async function getDecksWithStats(userId: string) {
@@ -32,9 +34,20 @@ export async function getDeckCards(deckId: string) {
     .orderBy(desc(cards.id));
 }
 
-/** Cards due now across every deck the user owns, oldest due first. */
-export async function getDueCards(userId: string) {
-  return db
+/**
+ * Cards due now, oldest first — every deck the user owns, or one deck when
+ * `deckId` is given. Interval previews are attached here so the scheduler
+ * stays server-side (SPEC §7).
+ */
+export async function getDueStudyCards(
+  userId: string,
+  deckId?: string,
+): Promise<StudyCard[]> {
+  const scope = deckId
+    ? and(eq(decks.userId, userId), eq(cards.deckId, deckId))
+    : eq(decks.userId, userId);
+
+  const rows = await db
     .select({
       id: cards.id,
       deckId: cards.deckId,
@@ -42,12 +55,27 @@ export async function getDueCards(userId: string) {
       front: cards.front,
       back: cards.back,
       example: cards.example,
-      nextReviewAt: cards.nextReviewAt,
+      stability: cards.stability,
+      difficulty: cards.difficulty,
+      repetitions: cards.repetitions,
+      interval: cards.interval,
     })
     .from(cards)
     .innerJoin(decks, eq(cards.deckId, decks.id))
-    .where(and(eq(decks.userId, userId), lte(cards.nextReviewAt, new Date())))
+    .where(and(scope, lte(cards.nextReviewAt, new Date())))
     .orderBy(cards.nextReviewAt);
+
+  return rows.map(
+    ({ stability, difficulty, repetitions, interval, ...card }) => ({
+      ...card,
+      previews: previewIntervals({
+        stability: Number(stability),
+        difficulty: Number(difficulty),
+        repetitions,
+        interval,
+      }),
+    }),
+  );
 }
 
 /** Joins through the deck so a card is only ever readable by its owner. */

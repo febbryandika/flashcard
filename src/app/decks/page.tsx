@@ -19,7 +19,7 @@ export default async function DecksPage() {
 
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-6 p-6">
-      <header className="flex items-center justify-between gap-4">
+      <header className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Decks</h1>
           <p className="text-muted-foreground text-sm">
@@ -27,6 +27,12 @@ export default async function DecksPage() {
           </p>
         </div>
         <div className="flex items-center gap-3">
+          <Link
+            href="/review"
+            className={buttonVariants({ variant: "outline" })}
+          >
+            Review
+          </Link>
           <Link href="/decks/new" className={buttonVariants()}>
             New deck
           </Link>
