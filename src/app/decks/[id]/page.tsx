@@ -8,6 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
+import { AiExtractor } from "@/components/ai-extractor";
 import { CardForm } from "@/components/card-form";
 import { CsvImporter } from "@/components/csv-importer";
 import { DeleteCardButton } from "@/components/delete-card-button";
@@ -84,6 +85,19 @@ export default async function DeckDetailPage({
         </CardHeader>
         <CardContent>
           <CsvImporter deckId={deck.id} />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>
+            <h2 className="font-heading text-base leading-snug font-medium">
+              Extract cards with AI
+            </h2>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <AiExtractor deckId={deck.id} />
         </CardContent>
       </Card>
 
