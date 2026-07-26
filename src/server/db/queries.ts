@@ -1,4 +1,4 @@
-import { and, count, desc, eq, sql } from "drizzle-orm";
+import { and, count, desc, eq, lte, sql } from "drizzle-orm";
 import { db } from "@/server/db";
 import { cards, decks } from "@/server/db/schema";
 
@@ -30,6 +30,24 @@ export async function getDeckCards(deckId: string) {
     .from(cards)
     .where(eq(cards.deckId, deckId))
     .orderBy(desc(cards.id));
+}
+
+/** Cards due now across every deck the user owns, oldest due first. */
+export async function getDueCards(userId: string) {
+  return db
+    .select({
+      id: cards.id,
+      deckId: cards.deckId,
+      deckName: decks.name,
+      front: cards.front,
+      back: cards.back,
+      example: cards.example,
+      nextReviewAt: cards.nextReviewAt,
+    })
+    .from(cards)
+    .innerJoin(decks, eq(cards.deckId, decks.id))
+    .where(and(eq(decks.userId, userId), lte(cards.nextReviewAt, new Date())))
+    .orderBy(cards.nextReviewAt);
 }
 
 /** Joins through the deck so a card is only ever readable by its owner. */
