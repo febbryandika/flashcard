@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { RETURN_TO_PARAM, safeReturnTo } from "@/lib/return-to";
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,8 +11,12 @@ import { Label } from "@/components/ui/label";
 
 export function SignInForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
+
+  // Where the user was before their session expired (SPEC §10).
+  const returnTo = safeReturnTo(searchParams.get(RETURN_TO_PARAM));
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -30,7 +35,7 @@ export function SignInForm() {
       return;
     }
 
-    router.push("/decks");
+    router.push(returnTo);
     router.refresh();
   }
 

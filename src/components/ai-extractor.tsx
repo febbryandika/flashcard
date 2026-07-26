@@ -1,7 +1,8 @@
 "use client";
 
 import { useId, useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { signInWithReturnTo } from "@/lib/return-to";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -16,6 +17,7 @@ export function AiExtractor({ deckId }: { deckId: string }) {
   const id = useId();
   const textareaId = `${id}-ai-text`;
   const router = useRouter();
+  const pathname = usePathname();
   const [isPending, startTransition] = useTransition();
 
   const [text, setText] = useState("");
@@ -48,7 +50,7 @@ export function AiExtractor({ deckId }: { deckId: string }) {
       })
       .catch((error: unknown) => {
         if (error instanceof HttpError && error.status === 401) {
-          router.push("/sign-in");
+          router.push(signInWithReturnTo(pathname));
           return;
         }
         setExtractError(

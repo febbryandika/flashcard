@@ -67,7 +67,12 @@ export function SignUpForm() {
           {error}
         </p>
       ) : null}
-      <Button type="submit" disabled={isPending} className="w-full">
+      <Button
+        type="submit"
+        disabled={isPending}
+        aria-busy={isPending}
+        className="w-full"
+      >
         {isPending ? "Creating account…" : "Create account"}
       </Button>
       <p className="text-muted-foreground text-center text-sm">

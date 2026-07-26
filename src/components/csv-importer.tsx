@@ -226,6 +226,7 @@ export function CsvImporter({ deckId }: { deckId: string }) {
               type="button"
               onClick={handleImport}
               disabled={validRows.length === 0 || isPending}
+              aria-busy={isPending}
             >
               {isPending ? "Importing…" : `Import ${validRows.length} cards`}
             </Button>

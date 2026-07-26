@@ -62,7 +62,7 @@ export function DeckForm({
         </p>
       ) : null}
       <div className="flex items-center gap-3">
-        <Button type="submit" disabled={pending}>
+        <Button type="submit" disabled={pending} aria-busy={pending}>
           {pending ? pendingLabel : submitLabel}
         </Button>
         <Link

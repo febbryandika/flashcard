@@ -13,6 +13,7 @@ function DeleteSubmitButton({ cardFront }: { cardFront: string }) {
       variant="ghost"
       size="sm"
       disabled={pending}
+      aria-busy={pending}
       aria-label={`Delete card "${cardFront}"`}
     >
       {pending ? "Deleting…" : "Delete"}

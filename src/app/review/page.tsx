@@ -2,7 +2,8 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { signInWithReturnTo } from "@/lib/return-to";
 import { useQuery } from "@tanstack/react-query";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -12,6 +13,7 @@ import type { StudyCard } from "@/lib/study";
 
 export default function ReviewPage() {
   const router = useRouter();
+  const pathname = usePathname();
   const { data, error, isPending, refetch } = useQuery({
     queryKey: ["due"],
     queryFn: () => fetchJson<{ cards: StudyCard[] }>("/api/review/due"),
@@ -20,8 +22,8 @@ export default function ReviewPage() {
   const isUnauthorized = error instanceof HttpError && error.status === 401;
 
   useEffect(() => {
-    if (isUnauthorized) router.push("/sign-in");
-  }, [isUnauthorized, router]);
+    if (isUnauthorized) router.push(signInWithReturnTo(pathname));
+  }, [isUnauthorized, router, pathname]);
 
   if (isPending) {
     return (
