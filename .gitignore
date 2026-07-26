@@ -99,5 +99,6 @@ docs/*
 !docs/screenshots/**
 !docs/API.md
 !docs/DATABASE.md
+!docs/IMPLEMENTATION.md
 !docs/diagrams/
 !docs/diagrams/**

@@ -142,6 +142,7 @@ docs/                           API reference, database, diagrams, screenshots
 - [**API reference**](docs/API.md) — Route Handlers and Server Actions, request/response shapes, error codes
 - [**Database**](docs/DATABASE.md) — ERD, the ownership model, FSRS columns, indexes
 - [**Architecture**](docs/diagrams/architecture.md) — how the pieces fit and which boundaries matter
+- [**Implementation summary**](docs/IMPLEMENTATION.md) — section-by-section compliance with the spec, deliberate divergences, and what the tests cover
 
 ## Testing
 
@@ -158,6 +159,6 @@ The FSRS suite is mutation-checked: changing the Hard stability factor from `0.8
 
 Honest list of what isn't done:
 
-- **No rate limiting on `/api/ai/extract-cards`.** It's the only paid, slow path, and any signed-in user can currently call it without limit. This should land before the app is deployed anywhere public.
 - **No retention-rate stat.** The deck list shows total cards and cards due; retention needs a review-history table the schema doesn't have yet.
 - **No demo GIF.** Screenshots only, for now.
+- **Rate limiting is in-memory.** 10 AI extractions per minute per user, enforced per process. It resets on restart and doesn't coordinate across instances — swap in Upstash before running more than one.

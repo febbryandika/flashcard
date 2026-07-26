@@ -1,6 +1,6 @@
 import { CSV_ROW_LIMIT } from "@/lib/validators";
 
-export const CSV_FIELD_MAX = 1000;
+const CSV_FIELD_MAX = 1000;
 
 type RowBase = {
   rowNumber: number;
